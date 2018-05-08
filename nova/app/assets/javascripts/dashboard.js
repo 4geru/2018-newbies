@@ -4,33 +4,23 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  Vue.component('button-counter', {
-    props: ['api_key', 'data_found'],
-    data: function () {
-      console.log(this.api_key)
-      var creditCardForm = document.getElementById('credit-card');
-      var stripe = Stripe(this.api_key);
-      var elements = stripe.elements();
-      var creditCard = elements.create('card');
-      var hasCreditCard = this.data_found === 'true';
-      // var form = document.getElementById('credit-card');
-      // if(form){ creditCard.mount(form); }
-      // return {
-      //   count: 0
-      // }
-      return {
-        count: 0,
-        creditCard: creditCard
-      }
-    },
-    template: '<button v-on:click="count++">You clicked me {{ count }} times.{{api_key}}</button>'
-  })
-
   var creditCardForm = document.getElementById('credit-card');
   var stripe = Stripe(creditCardForm.getAttribute('api-key'));
   var elements = stripe.elements();
   var creditCard = elements.create('card');
   var hasCreditCard = creditCardForm.getAttribute('data-found') === 'true';
+
+// // == test
+  var setting_creditCardForm = document.getElementById('setting-credit-card');
+  var setting_stripe = Stripe(setting_creditCardForm.getAttribute('api-key'));
+  var setting_elements = setting_stripe.elements();
+  var setting_creditCard = setting_elements.create('card');
+  var setting_hasCreditCard = setting_creditCardForm.getAttribute('data-found') === 'true';
+  var setting_form = document.getElementById('setting-credit-card');
+  setting_creditCard.mount(setting_form);
+
+
+// ==== test
 
   var api = {
     query: function(params) {
@@ -207,10 +197,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if(event) { event.preventDefault(); }
 
         var self = this;
-        api.put('/api/user', { user: this.user }).
-          then(function(json) {
-            self.user = json;
+        // api.put('/api/user', { user: this.user }).
+        //   then(function(json) {
+        //     console.log(json)
+        //     self.user = json;
+        //   });
+        setting_stripe.createToken(setting_creditCard).
+          then(function(result) {
+            return api.post('/api/credit_card', { credit_card: { source: result.token.id }});
+          }).
+          then(function() {
+            self.hasCreditCard = true;
           });
+
       },
     }
   });

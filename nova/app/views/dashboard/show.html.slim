@@ -1,31 +1,39 @@
 - content_for(:head) do
   = javascript_include_tag 'https://js.stripe.com/v3/'
-
+= current_user.nickname
 #dashboard
-  .columns(:class="{ 'is-hidden': hasCreditCard }")
+  .columns
     .column.is-12
-      .heading Credit Card
+      - if current_user.credit_card
+        - credit_card = current_user.credit_card
+        p
+          = "登録済クレジットカードの情報"
+        p
+          = "下4桁は#{credit_card.last4}です。"
+        p
+          = "クレジットカードの有効期限は#{credit_card.exp_year}年#{credit_card.exp_month}月までです。"
+        .heading Change Credit Card
+      - else
+        = 'まだクレジットカードが登録されていません。'
+        .heading Credit Card
       .field.is-grouped
         .control.is-expanded
           #credit-card(api-key="#{Stripe.public_key}" data-found="#{current_user.credit_card ? 'true' : 'false'}")
         .control.has-text-right
           button.button.is-small.is-primary(@click="registerCreditCard($event)") Register
 
-  .columns
-    .column.is-4
-      .heading Amount
-      .title= '{{amount}}円'
-    .column.is-8
-      .heading Charge
-      .buttons
-        a.button(:disabled="!hasCreditCard" @click="charge(100, $event)") 100円
-        a.button(:disabled="!hasCreditCard" @click="charge(500, $event)") 500円
-        a.button(:disabled="!hasCreditCard" @click="charge(1000, $event)") 1,000円
-        a.button(:disabled="!hasCreditCard" @click="charge(5000, $event)") 5,000円
-
-  .columns.
-    .column.is-12
-      button-counter(api_key="#{Stripe.public_key}" data_found="#{current_user.credit_card ? 'true' : 'false'}")
+  - if current_user.credit_card
+    .columns
+      .column.is-4
+        .heading Amount
+        .title= '{{amount}}円'
+      .column.is-8
+        .heading Charge
+        .buttons
+          a.button(:disabled="!hasCreditCard" @click="charge(100, $event)") 100円
+          a.button(:disabled="!hasCreditCard" @click="charge(500, $event)") 500円
+          a.button(:disabled="!hasCreditCard" @click="charge(1000, $event)") 1,000円
+          a.button(:disabled="!hasCreditCard" @click="charge(5000, $event)") 5,000円
 
   .columns.
     .column.is-12
@@ -95,6 +103,9 @@
           label.label Password
           .control
             input.input(type="password" v-model="user.password")
+        .field
+          label.label Credit Card
+          #setting-credit-card(api-key="#{Stripe.public_key}" data-found="#{current_user.credit_card ? 'true' : 'false'}")
         .field
           .control.has-text-right
             button.button.is-primary(type="submit") Update
