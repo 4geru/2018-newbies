@@ -25,6 +25,10 @@
 
   .columns.
     .column.is-12
+      button-counter(api_key="#{Stripe.public_key}" data_found="#{current_user.credit_card ? 'true' : 'false'}")
+
+  .columns.
+    .column.is-12
       .is-clearfix
         .is-pulled-right
           .tabs.is-small

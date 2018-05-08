@@ -4,6 +4,28 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  Vue.component('button-counter', {
+    props: ['api_key', 'data_found'],
+    data: function () {
+      console.log(this.api_key)
+      var creditCardForm = document.getElementById('credit-card');
+      var stripe = Stripe(this.api_key);
+      var elements = stripe.elements();
+      var creditCard = elements.create('card');
+      var hasCreditCard = this.data_found === 'true';
+      // var form = document.getElementById('credit-card');
+      // if(form){ creditCard.mount(form); }
+      // return {
+      //   count: 0
+      // }
+      return {
+        count: 0,
+        creditCard: creditCard
+      }
+    },
+    template: '<button v-on:click="count++">You clicked me {{ count }} times.{{api_key}}</button>'
+  })
+
   var creditCardForm = document.getElementById('credit-card');
   var stripe = Stripe(creditCardForm.getAttribute('api-key'));
   var elements = stripe.elements();
