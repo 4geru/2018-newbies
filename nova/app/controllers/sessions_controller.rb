@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
       self.current_user = @user
       redirect_to dashboard_path
     else
-      render :new, status: :bad_request
+      redirect_to login_path, alert: 'ユーザーが存在しないかパスワードが間違っています'
     end
   end
 
