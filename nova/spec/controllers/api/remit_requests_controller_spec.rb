@@ -8,32 +8,16 @@ RSpec.describe Api::RemitRequestsController, type: :controller do
   let(:remit_request) { create(:remit_request, target: user) }
 
   describe 'GET #index' do
-    context 'without page params' do
-      subject { get :index }
+    subject { get :index }
 
-      context 'without logged in' do
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context 'with logged in' do
-        before { login!(user) }
-
-        it { is_expected.to have_http_status(:ok) }
-      end
+    context 'without logged in' do
+      it { is_expected.to have_http_status(:unauthorized) }
     end
 
-    context 'with page params' do
-      subject { get :index, params: { pages: 1 } }
+    context 'with logged in' do
+      before { login!(user) }
 
-      context 'without logged in' do
-        it { is_expected.to have_http_status(:unauthorized) }
-      end
-
-      context 'with logged in' do
-        before { login!(user) }
-
-        it { is_expected.to have_http_status(:ok) }
-      end
+      it { is_expected.to have_http_status(:ok) }
     end
   end
 
