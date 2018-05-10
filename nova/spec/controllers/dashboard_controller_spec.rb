@@ -15,7 +15,13 @@ RSpec.describe DashboardController, type: :controller do
     context 'with logged in' do
       before { login!(user) }
 
-      it { is_expected.to have_http_status(:ok) }
+      it.pending { is_expected.to have_http_status(200) }
+    end
+
+    context 'with activate' do
+      let(:user) { create(:user, :with_activated) }
+
+      it.pending { is_expected.to have_http_status(200) }
     end
   end
 end
