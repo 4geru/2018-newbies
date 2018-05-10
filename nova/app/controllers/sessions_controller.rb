@@ -10,10 +10,11 @@ class SessionsController < ApplicationController
     if @user && @user.authenticate(params[:user][:password])
       if @user.activated?
         log_in @user
+
         redirect_to dashboard_path
       else
-        message = "Account not activated."
-        message += "Check your email for the activation link."
+        message = "Account not activated." +
+          "Check your email for the activation link."
         flash[:warning] = message
         redirect_to root_url
       end
