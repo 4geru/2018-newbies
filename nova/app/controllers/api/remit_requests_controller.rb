@@ -6,7 +6,6 @@ class Api::RemitRequestsController < Api::ApplicationController
     page_limit = [@remit_requests.count, 1].max
     pages = [current_user.received_remit_requests.count, 1].max / page_limit + 
       ( current_user.received_remit_requests.count % page_limit ? 0 : 1)
->>>>>>> 9f9926842d28321fa43ece313b527c5c1effdf29
     render json:{max_pages: pages, remit_requests: @remit_requests.as_json(include: :user).to_a}
   end
 
