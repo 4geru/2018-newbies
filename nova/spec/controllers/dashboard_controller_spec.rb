@@ -14,7 +14,6 @@ RSpec.describe DashboardController, type: :controller do
 
     context 'with logged in' do
       before { login!(user) }
-
       it { is_expected.to have_http_status(:ok) }
     end
   end
