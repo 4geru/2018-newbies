@@ -7,14 +7,20 @@ class Charge < ApplicationRecord
 
   after_create :create_stripe_charge
 
+  def is_accepted?
+    not self.accepted_at.nil?
+  end
+
   protected
 
   def create_stripe_charge
-    Stripe::Charge.create(
+    result = Stripe::Charge.create(
       amount: amount,
       currency: 'jpy',
       customer: user.stripe_id
     )
+    self.update(accepted_at: DateTime.now)
+    result
   rescue Stripe::StripeError => e
     errors.add(:user, e.code.to_s.to_sym)
     throw :abort
