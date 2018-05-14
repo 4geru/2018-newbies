@@ -50,9 +50,17 @@ class User < ApplicationRecord
 
 
   def stripe
-    return @stripe if instance_variable_defined?(:@stripe)
+    Timeout.timeout(3) do
+      return @stripe if instance_variable_defined?(:@stripe)
 
-    @stripe = stripe_id? ? Stripe::Customer.retrieve(stripe_id) : nil
+      @stripe = stripe_id? ? Stripe::Customer.retrieve(stripe_id) : nil
+    rescue Stripe::StripeError => e
+      errors.add(:stripe, e.code.to_s.to_sym)
+      false
+    rescue Timeout::Error => e
+      errors.add(:user, e.to_s.to_sym)
+      false
+    end
   end
 
   # パスワード再設定の属性を設定する
@@ -73,17 +81,24 @@ class User < ApplicationRecord
 
   protected
 
+  # [TODO] activatedにする
   def create_stripe_customer
     return if stripe_id?
 
-    customer = Stripe::Customer.create(
-      email: email,
-      description: "User: #{id}"
-    )
-    update(stripe_id: customer.id)
+    Timeout.timeout(3) do
+      customer = Stripe::Customer.create(
+        email: email,
+        description: "User: #{id}"
+      )
+      update(stripe_id: customer.id)
+    end
   rescue Stripe::StripeError => e
+    # [TODO] どこでcustomer.idを生成するか考える
     errors.add(:stripe, e.code.to_s.to_sym)
-    throw :abort
+    false
+  rescue Timeout::Error => e
+    errors.add(:user, e.to_s.to_sym)
+    false
   end
 
   private
