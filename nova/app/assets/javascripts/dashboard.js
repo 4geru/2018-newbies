@@ -98,15 +98,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
       api.get('/api/remit_requests').
         then(function(json) {
-          self.maxPage = json.max_pages
+          console.log(json)
+          self.user.amount = json.amount;
+          self.maxPage = json.max_pages;
           self.recvRemits = json.remit_requests;
-          console.log(self.recvRemits[0].status);
           document.getElementsByClassName('pagination-link')[0].classList.add('is-current')
         });
 
       setInterval(function() {
         api.get('/api/remit_requests', { page: self.page }).
           then(function(json) {
+          self.user.amount = json.amount;
             self.recvRemits = json.remit_requests;
           });
       }, 5000);
