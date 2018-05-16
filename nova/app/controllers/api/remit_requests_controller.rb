@@ -9,12 +9,15 @@ class Api::RemitRequestsController < Api::ApplicationController
     page_limit = [@remit_requests.count, 1].max
     pages = [remit_requests_count, 1].max / page_limit + 
       ( remit_requests_count % page_limit ? 0 : 1)
-
-    render json:{max_pages: pages, remit_requests:
-      @remit_requests.as_json(include: {
-        user: { only: :email },
-        target: { only: :email }
-      }, only: [:amount, :status, :id] ).to_a}
+    render json:{
+      amount: current_user.amount,
+      max_pages: pages, 
+      remit_requests:
+        @remit_requests.as_json( include: {
+          user: { only: :email },
+          target: { only: :email }
+        }, only: [:amount, :status, :id] ).to_a
+      }
   end
 
   def create
@@ -33,8 +36,11 @@ class Api::RemitRequestsController < Api::ApplicationController
     @amount = 0
     if @remit_request.status == 'outstanding'
       @remit_request.update!(status: :accepted)
-      @amount = current_user.amount - @remit_request.amount
-      current_user.update(amount: @amount)
+      target = @remit_request.target
+      #[TODO] 多分悲観的ロック入れるんだよねー...
+      current_user.update!(amount: current_user.amount + @remit_request.amount)
+      target.update!(amount: target.amount - @remit_request.amount)
+      @amount = current_user.amount + @remit_request.amount
     end
     render json: {amount: @amount}, status: :ok
 

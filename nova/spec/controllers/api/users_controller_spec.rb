@@ -31,7 +31,6 @@ RSpec.describe Api::UsersController, type: :controller do
       it 'include user' do
         expect(@json).to have_key('nickname')
         expect(@json).to have_key('email')
-        expect(@json).to have_key('amount')
       end
 
       it 'not include user' do
@@ -41,6 +40,7 @@ RSpec.describe Api::UsersController, type: :controller do
         expect(@json).not_to have_key('password_digest')
         expect(@json).not_to have_key('activation_digest')
         expect(@json).not_to have_key('reset_digest')
+        expect(@json).not_to have_key('amount')
       end
     end
   end
