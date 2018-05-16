@@ -38,8 +38,8 @@ class Api::RemitRequestsController < Api::ApplicationController
       @remit_request.update!(status: :accepted)
       target = @remit_request.target
       #[TODO] 多分悲観的ロック入れるんだよねー...
-      current_user.update(amount: current_user.amount + @remit_request.amount)
-      target.update(amount: target.amount - @remit_request.amount)
+      current_user.update!(amount: current_user.amount + @remit_request.amount)
+      target.update!(amount: target.amount - @remit_request.amount)
       @amount = current_user.amount + @remit_request.amount
     end
     render json: {amount: @amount}, status: :ok
