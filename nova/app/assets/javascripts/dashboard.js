@@ -102,18 +102,18 @@ document.addEventListener('DOMContentLoaded', function() {
       api.get('/api/remit_requests').
         then(function(json) {
           self.user.amount = json.amount
-          self.maxPage = json.max_pages
+          self.maxPage = parseInt(json.all_remit_requests / 10 + (json.all_remit_requests % 10 ? 1 : 0))
           self.recvRemits = json.remit_requests;
           document.getElementsByClassName('pagination-link')[0].classList.add('is-current')
         });
 
-      setInterval(function() {
-        api.get('/api/remit_requests', { page: self.page }).
-          then(function(json) {
-            self.user.amount = json.amount
-            self.recvRemits = json.remit_requests;
-          });
-      }, 5000);
+      // setInterval(function() {
+      //   api.get('/api/remit_requests', { page: self.page }).
+      //     then(function(json) {
+      //       self.user.amount = json.amount
+      //       self.recvRemits = json.remit_requests;
+      //     });
+      // }, 5000);
     },
     mounted: function() {
       var form = document.getElementById('credit-card');

@@ -60,7 +60,7 @@ RSpec.describe Api::RemitRequestsController, type: :controller do
         before do @remit_request = @json["remit_requests"].first end
         it 'include remit_request' do
           expect(@remit_request).to have_key('status')
-          expect(@remit_request).to have_key('amount')
+          expect(@remit_request).to have_key('all_remit_requests')
           expect(@remit_request).to have_key('id')
         end
 
